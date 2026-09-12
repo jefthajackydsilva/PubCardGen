@@ -1,0 +1,13 @@
+1) ~~What would happen if person is not present in the pubInfo sheet but there are reports for that person in the months sheet. Or may be the name is present in the previous pubInfo sheet but absent in the current pubinfo sheet~~ DONE - such reporters are counted in the summaries but get no card (they moved out); a warning lists them. People who left PubInfo with no report at all this year are listed separately.
+2) ~~Add GUI for this.~~ DONE - `python -m pubcardgen.gui`: browse for both workbooks, the blank S-21 form and the output folder, toggle the credit overflow note, live log. Same toggle on the CLI as `--no_credit_overflow`.
+3) ~~When running the report, can you flag publisher's whose baptism date is more that 6 months from current date and less than 1.5 years from the current date.~~ DONE - the "1 year reminder after baptism" checkbox with a low/high slider (9 months, 12 months, 1.5 years, 2 years) lists them in the console; CLI equivalent `--baptism_reminder MIN_MONTHS MAX_MONTHS`. There is also "List unbaptized publishers" / `--list_unbaptized`.
+4) ~~I did not like the excel sheet randomizer. Create two excel files that can be added as inputs.~~ DONE - `input/TestCong_FeildReport_v4_2025-2026.xlsm` and `input/TestCong_FeildReport_v4_2026-2027.xlsm` are hand-made sample workbooks that can be fed straight to the CLI or the GUI.
+5) ~~Create a readme file for this project~~ DONE - `README.md`, GUI-first, with a screenshot at `docs/gui.png`.
+6) ~~Include the legacy readme into this readme~~ DONE - the legacy workbook instructions are the numbered rules in the "Filling in the workbook" section of `README.md`.
+7) Drop the Excel dependency so the workbook works on Linux / LibreOffice too. The Python side is already cross-platform (openpyxl + reportlab + pypdf, tkinter GUI, `os.startfile` already falls back to `xdg-open`), and every cell pubcardgen reads is a literal value, not a formula - so nothing in the code has to change. The work is on the workbook itself:
+   - Strip the VBA macros and save as `.xlsx` (already accepted by the CLI and the GUI file picker).
+   - Replace the macro-written TOTALS block with plain `SUMIF`/`COUNTIFS` formulas that Excel and LibreOffice both evaluate.
+   - Drop the `PubCards` sheet; the generated PDFs replace it.
+   - Keep the data-validation dropdowns - LibreOffice supports those.
+   - Optional: warn on load if a workbook still has macros, or if a needed cell is an uncached formula.
+   - On Linux the GUI needs `python3-tk` installed.

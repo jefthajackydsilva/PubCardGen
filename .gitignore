@@ -1,0 +1,22 @@
+# Real congregation data. Never commit these.
+private/
+*.bak
+
+# The blank S-21 form is published by the organization; supply your own copy.
+S-21_E.pdf
+
+# Generated cards
+output/
+output_*/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# PyInstaller
+build/
+dist/
+
+# Excel lock files
+~$*.xls*
