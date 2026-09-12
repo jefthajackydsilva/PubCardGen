@@ -183,3 +183,10 @@ The workflow can also be started by hand from the Actions tab, in which case the
 ## A note on privacy
 
 The cards contain dates of birth, dates of baptism and appointment details. Keep the generated PDFs where the congregation's records are kept, and do not commit them.
+
+## Licence
+
+[PolyForm Noncommercial License 1.0.0](LICENSE). Free to use, copy, change and share for any noncommercial purpose - personal use, religious observance, congregations, charities, schools and other noncommercial organizations are all covered explicitly. Selling it, or using it as part of a commercial offering, needs written permission from the copyright holder.
+
+The S-21 form itself is not covered by that licence, or included here. It is published by the organization, and you download your own copy.
+
