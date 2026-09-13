@@ -51,6 +51,13 @@ class MonthlyReport:
             or self.credit
         )
 
+    @property
+    def has_figures(self) -> bool:
+        """Whether the month was reported at all; the status alone is often pre-filled for the year."""
+        return bool(
+            self.shared or self.bible_studies or self.hours or self.remarks or self.credit
+        )
+
 
 @dataclass(frozen=True, slots=True)
 class Publisher:
@@ -139,6 +146,40 @@ class Card:
         return self.total_hours + self.credit_applied
 
     @property
+    def pioneer_months(self) -> list[str]:
+        """Months served as a regular/special pioneer or field missionary, in service year order.
+
+        Read from the month sheet status column only: PubInfo gives today's standing, which says
+        nothing about the months before somebody started pioneering.
+        """
+        return [
+            month
+            for month in MONTHS
+            if (report := self.report(month))
+            and report.has_figures
+            and report.status in FULL_TIME_STATUSES
+        ]
+
+    @property
+    def pioneer_average(self) -> float | None:
+        """Average monthly hours including credit across the pioneer months.
+
+        None unless the publisher was still pioneering at their last report: somebody who gave
+        up pioneering part way through the year is not averaged at all, while somebody who took
+        it up mid-year is averaged over the pioneer months only.
+        """
+        months = self.pioneer_months
+        if not months:
+            return None
+
+        for month in MONTHS[MONTHS.index(months[0]):]:
+            report = self.report(month)
+            if report and report.has_figures and month not in months:
+                return None
+
+        return sum(_hours_with_credit(self.reports[m]) for m in months) / len(months)
+
+    @property
     def _credit(self) -> tuple[float, float]:
         """Credit that fits under the monthly cap, and the remainder that does not."""
         applied = overflow = 0.0
@@ -151,6 +192,12 @@ class Card:
             applied += used
             overflow += credit - used
         return applied, overflow
+
+
+def _hours_with_credit(report: MonthlyReport) -> float:
+    """The month's hours plus whatever credit fits under the cap."""
+    hours = report.hours or 0
+    return hours + min(report.credit or 0, max(0.0, CREDIT_CAP - hours))
 
 
 def serves_as_pioneer(publisher: Publisher, report: MonthlyReport) -> bool:

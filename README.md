@@ -90,6 +90,7 @@ Every card is written twice, once under each tree, so you can either hand a grou
 - **The summaries follow how someone actually served that month.** Somebody who auxiliary pioneered in April is counted under *Auxiliary Pioneers* for April and as a publisher the rest of the year, falling back to their PubInfo standing when the month says nothing.
 - **`Do not generate Card`** means exactly that: no card of their own, but their figures still count in the summaries.
 - **Credit hours** apply only to a pioneer month and only up to 55 hours: `applied = min(credit, max(0, 55 - hours))`. What is left over is the overflow. The total row then reads *"Total including credit = X; Credit overflow = Y"*. The summary cards deliberately exclude credit so they tie out with the workbook's own totals block.
+- **Pioneer averages.** Cards for regular pioneers, special pioneers and field missionaries also carry *"Average = X hrs (N months)"* on the total row - the average monthly hours with credit included. Only the months served as a pioneer are counted, so somebody who took up pioneering in January is averaged from January on. Somebody who gave up pioneering part way through the year gets no average at all. The month sheet's Status column is what decides this, month by month, so keep it filled in for pioneers.
 - **Last year's page** keeps this year's personal details but last year's appointment and pioneer status - that is what the printed card shows. Publishers who are new this year get one page.
 
 ## Warnings you may see

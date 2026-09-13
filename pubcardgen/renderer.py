@@ -159,12 +159,24 @@ class CardRenderer:
                 _format_number(card.total_hours),
             )
 
+        notes: list[str] = []
         if card.has_credit:
             note = f"Total including credit = {_format_number(card.total_with_credit)}"
             if self._show_credit_overflow:
                 note += f"; Credit overflow = {_format_number(card.credit_overflow)}"
+            notes.append(note)
+
+        average = card.pioneer_average
+        if average is not None:
+            months = len(card.pioneer_months)
+            notes.append(
+                f"Average = {_format_number(round(average, 1))} hrs "
+                f"({months} month{'s' if months != 1 else ''})"
+            )
+
+        if notes:
             text, size = _fit(
-                note,
+                "; ".join(notes),
                 layout.REMARKS_MAX_WIDTH,
                 layout.FONT,
                 layout.REMARKS_SIZE,
