@@ -12,6 +12,7 @@ from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from tkinter import filedialog, ttk
 
+from .__main__ import GENERATED_CARDS
 from .__main__ import main as run_generator
 
 PAGE_BG = "#eef1f7"
@@ -509,7 +510,10 @@ class App(tk.Tk):
 
     def _open_output(self) -> None:
         folder = Path(self.out_dir.get().strip()).expanduser()
-        if folder.is_dir():
+        generated = folder / GENERATED_CARDS
+        if generated.is_dir():
+            _reveal(generated)
+        elif folder.is_dir():
             _reveal(folder)
         else:
             self._append(f"error: no such folder: {folder}\n", "err")

@@ -59,7 +59,7 @@ Somebody marked `Do not generate Card` still counts in the congregation summarie
 1. **Current service year workbook** - browse to this year's field report workbook.
 2. **Previous service year workbook** - optional. When set, every card gets last year's record as a second page, exactly as the printed cards are kept. The two workbooks have to be consecutive service years; if the file names say otherwise the run stops before anything is read.
 3. **Blank S-21 form** - already filled in if `S-21_E.pdf` sits beside the app.
-4. **Output folder** - defaults to an `output` folder beside the app. Anything already there with the same name is overwritten.
+4. **Output folder** - defaults to an `output` folder beside the app. Everything is written into a `GeneratedCards` folder inside it, and that folder is replaced from scratch on every run, so nothing from a previous run is left behind. Anything else in the folder you pick is untouched.
 5. Optional switches:
    - **Print credit overflow on cards** - off leaves only *"Total including credit = X"* in the total row, without the *"; Credit overflow = Y"* half.
    - **List unbaptized publishers** - lists everyone with a card but no baptism date.
@@ -69,7 +69,7 @@ Somebody marked `Do not generate Card` still counts in the congregation summarie
 ## What comes out
 
 ```text
-output/
+GeneratedCards/
   All cards 2026-2027.pdf              every card + the 3 summaries, ready to print
   All cards 2025-2026.pdf              the same for last year (only if you picked a second workbook)
   Summary 1 - Pioneers.pdf
@@ -81,6 +81,8 @@ output/
     1 - Pioneers/Maria Johnson.pdf
     2 - Publishers/North Group/Brian Perez.pdf
 ```
+
+That whole `GeneratedCards` folder is deleted and rebuilt each time you run, so it always matches the workbook you just read.
 
 Every card is written twice, once under each tree, so you can either hand a group overseer their whole group or file the cards the way the secretary keeps them. The summary cards use the same S-21 layout: one line per month with the number reporting, the studies and the hours for each of the three categories.
 
@@ -138,7 +140,7 @@ python -m pubcardgen --current_workbook input\FeildReport_v4_2026-2027.xlsm `
 | `--current_workbook PATH` | This year's workbook. |
 | `--previous_workbook PATH` | Last year's workbook; adds the second page. |
 | `--template PATH` | Blank S-21 form. Default `S-21_E.pdf`. |
-| `--out PATH` | Output directory. Default `output`. |
+| `--out PATH` | Output directory; cards land in `PATH/GeneratedCards`. Default `output`. |
 | `--year 2026-2027` | Override the service year; otherwise read from the file name. |
 | `--group "North Group"` | Only this field service group. Repeat for several. |
 | `--no_credit_overflow` | Leave the credit overflow figure off the cards. |

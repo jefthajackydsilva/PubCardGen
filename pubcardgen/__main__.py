@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import calendar
 import re
+import shutil
 import sys
 from collections.abc import Callable
 from dataclasses import dataclass, replace
@@ -20,6 +21,8 @@ ProgressCallback = Callable[[int, int, str], None]
 
 _UNSAFE_FILENAME = re.compile(r'[\\/:*?"<>|]+')
 UNGROUPED = "Ungrouped"
+# Everything is written here, inside the chosen output directory, and replaced on every run.
+GENERATED_CARDS = "GeneratedCards"
 BY_GROUP_TREE = "By group"
 FILING_TREE = "By filing order"
 PIONEER_SECTION = "1 - Pioneers"
@@ -315,6 +318,14 @@ def main(argv: list[str] | None = None, progress: ProgressCallback | None = None
     cards = build_cards(publishers, reports, service_year)
     renderer = CardRenderer(args.template, show_credit_overflow=not args.no_credit_overflow)
 
+    out = args.out / GENERATED_CARDS
+    if out.is_dir():
+        try:
+            shutil.rmtree(out)
+        except OSError as error:
+            print(f"error: could not clear {out}: {error}", file=sys.stderr)
+            return 1
+
     previous_by_name = _index(previous_roster)
     new_publishers: list[str] = []
 
@@ -358,7 +369,7 @@ def main(argv: list[str] | None = None, progress: ProgressCallback | None = None
 
     for card in cards:
         current, previous = pages_for(card)
-        store(current, previous, destinations(card, args.out))
+        store(current, previous, destinations(card, out))
         step += 1
         report_progress(step, total_steps, card.publisher.name)
 
@@ -375,14 +386,14 @@ def main(argv: list[str] | None = None, progress: ProgressCallback | None = None
 
     for index, (stem, card) in enumerate(summaries):
         previous = renderer.render(previous_summaries[index][1]) if previous_summaries else None
-        store(renderer.render(card), previous, [args.out / f"{_safe_filename(stem)}.pdf"])
+        store(renderer.render(card), previous, [out / f"{_safe_filename(stem)}.pdf"])
         step += 1
         report_progress(step, total_steps, stem)
 
-    masters = [renderer.combine(current_pages, args.out / f"All cards {service_year}.pdf")]
+    masters = [renderer.combine(current_pages, out / f"All cards {service_year}.pdf")]
     if previous_pages:
         masters.append(
-            renderer.combine(previous_pages, args.out / f"All cards {previous_year}.pdf")
+            renderer.combine(previous_pages, out / f"All cards {previous_year}.pdf")
         )
     report_progress(total_steps, total_steps, "Master PDFs")
 
@@ -393,7 +404,7 @@ def main(argv: list[str] | None = None, progress: ProgressCallback | None = None
         print(f"Previous year       : {previous_year}")
     print(f"Cards generated     : {len(cards)}")
     print(f"Summary cards       : {len(summaries)}")
-    print(f"Output directory    : {args.out.resolve()}")
+    print(f"Output directory    : {out.resolve()}")
     if args.no_credit_overflow:
         print("Credit overflow     : not printed on cards")
     for master in masters:
